@@ -18,7 +18,6 @@
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "android.permission.NFC",
         "android.permission.NFC"
       ],
       "package": "com.anonymous.vacaapp"
@@ -48,6 +47,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "d3639163-0e30-4b2c-90ba-fe9e8eb16725"
+      }
     }
   }
 }
