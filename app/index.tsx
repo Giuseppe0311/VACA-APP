@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, useColorScheme, View } from 'react-native';
 import { Header } from '../components/Header';
@@ -13,7 +14,7 @@ import { useNfcManager } from '../hooks/useNfcManager';
 export default function App() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [isWriting, setIsWriting] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,6 +26,7 @@ export default function App() {
   const [nfcErrorStack, setNfcErrorStack] = useState<string | null>(null);
   const [showError, setShowError] = useState(false);
 
+  // IMPORTANTE: Primero cargar todos los hooks, incluso useNfcManager
   const { 
     isScanning, 
     scanResult, 
@@ -40,6 +42,14 @@ export default function App() {
     cancelScan
   } = useNfcManager();
 
+  // Redireccionar a login si no está autenticado
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      console.log('No autenticado, redirigiendo a login');
+      router.replace('/login');
+    }
+  }, [isAuthenticated, isLoading]);
+
   // Observador para el estado de error de NFC
   useEffect(() => {
     if (nfcShowError && errorMessage) {
@@ -49,6 +59,11 @@ export default function App() {
       setNfcShowError(false); // Reset el estado en el hook
     }
   }, [nfcShowError, errorMessage, errorStack, setNfcShowError]);
+
+  // Return condicional DESPUÉS de cargar todos los hooks
+  if (isLoading || !isAuthenticated) {
+    return null;
+  }
 
   const handleWritePress = () => {
     setShowForm(true);

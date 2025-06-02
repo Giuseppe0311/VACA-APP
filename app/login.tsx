@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -16,11 +17,19 @@ import { useAuth } from '../contexts/AuthContext';
 export default function LoginScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, isAuthenticated } = useAuth();
   
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  // Redireccionar a index si ya está autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('Usuario ya autenticado, redirigiendo a index');
+      router.replace('/');
+    }
+  }, [isAuthenticated]);
 
   const handleLogin = async () => {
     if (!username || !password) {

@@ -111,11 +111,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           await AsyncStorage.setItem(TOKEN_KEY, data.token);
           setToken(data.token);
           
-          // Redirigir al usuario a la página principal
-          setTimeout(() => {
-            router.replace('/');
-          }, 500);
-          
+          // La redirección ahora se maneja en los componentes
           return { success: true };
         } else {
           // Si el token está vacío, probablemente credenciales incorrectas
