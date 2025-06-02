@@ -7,11 +7,13 @@ import { ErrorModal } from '../components/modals/ErrorModal';
 import { RegistrationForm } from '../components/modals/RegistrationForm';
 import { ResultModal } from '../components/modals/ResultModal';
 import { ScanningModal } from '../components/modals/ScanningModal';
+import { useAuth } from '../contexts/AuthContext';
 import { useNfcManager } from '../hooks/useNfcManager';
 
 export default function App() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const { isAuthenticated } = useAuth();
   const [isWriting, setIsWriting] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
