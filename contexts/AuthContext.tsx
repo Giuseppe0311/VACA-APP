@@ -145,7 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await AsyncStorage.removeItem(TOKEN_KEY);
       setToken(null);
-      router.replace('/login');
+      router.replace('/screens/Login');
     } catch (error) {
       console.error('Error en logout:', error);
     }
@@ -167,7 +167,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log('Error 401 detectado - redirigiendo a login');
           await AsyncStorage.removeItem(TOKEN_KEY);
           setToken(null);
-          router.replace('/login');
+          router.replace('/screens/Login');
         }
         
         return response;

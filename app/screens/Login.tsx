@@ -1,18 +1,18 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  useColorScheme
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    useColorScheme
 } from 'react-native';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function LoginScreen() {
   const colorScheme = useColorScheme();
@@ -27,7 +27,7 @@ export default function LoginScreen() {
   useEffect(() => {
     if (isAuthenticated) {
       console.log('Usuario ya autenticado, redirigiendo a index');
-      router.replace('/');
+      router.replace('/screens/Home');
     }
   }, [isAuthenticated]);
 

@@ -16,7 +16,7 @@ interface UseNfcManagerReturn {
   errorMessage: string | null;
   errorStack: string | null;
   showError: boolean;
-  readTag: () => Promise<void>;
+  readTagID: () => Promise<void>;
   writeCattleData: (data: any) => Promise<void>;
   clearTagData: () => Promise<void>;
   setShowResult: (show: boolean) => void;
@@ -24,27 +24,21 @@ interface UseNfcManagerReturn {
   cancelScan: () => void;
 }
 
-// Inicializa NFC Manager al montar el componente
 NfcManager.start();
 
-// Función para obtener el stack trace completo de un error
 function getFullErrorInfo(error: any): string {
   const errorInfo = [];
   
-  // Capturar el mensaje de error
   errorInfo.push(`Error: ${error.message || 'Error desconocido'}`);
   
-  // Capturar el nombre del error
   if (error.name) {
     errorInfo.push(`Tipo: ${error.name}`);
   }
   
-  // Capturar el stack trace si existe
   if (error.stack) {
     errorInfo.push(`\nStack Trace:\n${error.stack}`);
   }
   
-  // Capturar todas las propiedades adicionales del error
   const additionalProps = Object.entries(error)
     .filter(([key]) => !['message', 'name', 'stack'].includes(key))
     .map(([key, value]) => `${key}: ${JSON.stringify(value)}`);
@@ -69,31 +63,36 @@ export function useNfcManager(): UseNfcManagerReturn {
     setIsScanning(false);
   };
 
-  const readTag = async (): Promise<void> => {
+  const readTagID = async (): Promise<void> => {
     setIsScanning(true);
     try {
+
+      await NfcManager.cancelTechnologyRequest().catch(() => {/* ignorar errores aquí */});
+    
+      await new Promise(resolve => setTimeout(resolve, 300));
+
       await NfcManager.requestTechnology(NfcTech.Ndef);
+
       const tag = await NfcManager.getTag();
-      const records = tag?.ndefMessage ?? [];
-      
-      if (records.length === 0) {
-        setScanResult('No se ha registrado información aún');
+
+      const uid: string | undefined = tag?.id;
+
+      if (uid) {
+        setScanResult(uid);
       } else {
-        const payload = new Uint8Array(records[0].payload);
-        const text = Ndef.text.decodePayload(payload);
-        setScanResult(text || 'No se ha registrado información aún');
+        setScanResult('No se pudo obtener el ID de la etiqueta');
       }
       setShowResult(true);
     } catch (err: any) {
-      console.warn('Error en readTag:', err);
-      setScanResult('Error al leer la etiqueta');
+      console.warn('Error en readID:', err);
+      setScanResult('Error al leer el ID de la etiqueta');
       setShowResult(true);
       setErrorMessage(`Error al leer la etiqueta NFC: ${err.message || 'Error desconocido'}`);
       setErrorStack(getFullErrorInfo(err));
       setShowError(true);
-      throw err; // Re-lanzamos el error para manejarlo en el componente
+      throw err;
     } finally {
-      NfcManager.cancelTechnologyRequest();
+      await NfcManager.cancelTechnologyRequest();
       setIsScanning(false);
     }
   };
@@ -101,7 +100,7 @@ export function useNfcManager(): UseNfcManagerReturn {
   const writeCattleData = async (data: any): Promise<void> => {
     setIsScanning(true);
     try {
-      // 1. Verificamos que NFC esté activo
+        // 1. Verificamos que NFC esté activo
       const isEnabled = await NfcManager.isEnabled();
       if (!isEnabled) {
         throw new Error('NFC no está habilitado');
@@ -188,7 +187,7 @@ export function useNfcManager(): UseNfcManagerReturn {
     errorMessage,
     errorStack,
     showError,
-    readTag,
+    readTagID,
     writeCattleData,
     clearTagData,
     setShowResult,

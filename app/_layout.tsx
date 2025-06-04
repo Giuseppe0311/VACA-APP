@@ -30,7 +30,19 @@ export default function RootLayout() {
           }}
         >
           <Stack.Screen
-            name="login"
+            name="screens/Login"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="screens/Home"
+            options={{
+              headerShown: true,
+            }}
+          />
+          <Stack.Screen
+            name="screens/RegistrarAnimalScreen"
             options={{
               headerShown: false,
             }}
@@ -38,7 +50,7 @@ export default function RootLayout() {
           <Stack.Screen
             name="index"
             options={{
-              headerShown: true,
+              headerShown: false,
             }}
           />
         </Stack>
