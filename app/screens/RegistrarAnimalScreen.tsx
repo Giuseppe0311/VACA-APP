@@ -10,14 +10,15 @@ import { Alert, Image } from 'react-native';
 
 // Definir tipado para los datos del formulario
 interface FormData {
-  rfidTag: string;
+  tag: string;
   nombre: string;
   sexo: string;
   raza: string;
   fechaNacimiento: string;
   estado: string;
   fotoIpfsHash: string;
-  idcamada: string;
+  idCamada: string;
+  dueno: string;
 }
 
 export default function RegistrarAnimalScreen() {
@@ -27,14 +28,15 @@ export default function RegistrarAnimalScreen() {
 
   // Estado para los datos del formulario
   const [formData, setFormData] = useState<FormData>({
-    rfidTag: '',
+    tag: '',
     nombre: '',
     sexo: '',
     raza: '',
     fechaNacimiento: '',
     estado: '',
     fotoIpfsHash: '',
-    idcamada: ''
+    idCamada: '',
+    dueno: '',
   });
 
   // Manejo del escaneo NFC
@@ -49,7 +51,7 @@ export default function RegistrarAnimalScreen() {
       if (scanResult) {
         setFormData(prev => ({
           ...prev,
-          rfidTag: scanResult
+          tag: scanResult
         }));
       }
     } catch (error) {
@@ -107,7 +109,19 @@ export default function RegistrarAnimalScreen() {
     { label: 'Camada C', value: 'C' }
   ];
 
+  const opcionesRaza = [
+    { label: 'Brangus', value: 'Brangus' },
+    { label: 'Girolando', value: 'Girolando' },
+    { label: 'Criolla', value: 'Criolla' },
+    { label: 'Holstein', value: 'Holstein' },
+    { label: 'Brown Swiss', value: 'Brown Swiss' },
+    { label: 'Mestizo', value: 'Mestizo' }
+  ];
 
+  const opcionesSexo = [
+      { label: 'Macho', value: 'Macho' },
+      { label: 'Hembra', value: 'Hembra' }
+  ];
 
   return (
     <View className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
@@ -142,8 +156,8 @@ export default function RegistrarAnimalScreen() {
               {isScanning ? "Escaneando..." : "Escanear Tag"}
             </Text>
           </TouchableOpacity>
-          {formData.rfidTag ? (
-            <Text className="mt-4 text-green-600 font-semibold">Tag: {formData.rfidTag}</Text>
+          {formData.tag ? (
+            <Text className="mt-4 text-green-600 font-semibold">Tag: {formData.tag}</Text>
           ) : null}
         </View>
 
@@ -151,14 +165,15 @@ export default function RegistrarAnimalScreen() {
         <View className={`rounded-2xl shadow-md p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`} style={{ elevation: 4 }}>
           {/* Campos del formulario */}
           {[
-            { label: 'RFID Tag', key: 'rfidTag', placeholder: 'rfidTag' },
+            { label: 'RFID Tag', key: 'tag', placeholder: 'tag' },
             { label: 'Nombre', key: 'nombre', placeholder: 'Ej: Bella' },
-            { label: 'Sexo', key: 'sexo', placeholder: 'Ej: Hembra' },
+            { label: 'Sexo', key: 'sexo', placeholder: 'Seleccionar sexo' },
             { label: 'Raza', key: 'raza', placeholder: 'Seleccionar raza' },
+            { label: 'Camada', key: 'idCamada', placeholder: 'Seleccionar camada' },
             { label: 'Fecha de Nacimiento', key: 'fechaNacimiento', placeholder: 'YYYY-MM-DD' },
-            { label: 'Estado', key: 'estado', placeholder: 'Ej: Activo' },
-            { label: 'Foto del Animal', key: 'fotoIpfsHash', placeholder: '' },
-            { label: 'Camada', key: 'idcamada', placeholder: 'Seleccionar camada' },
+            { label: 'Estado', key: 'estado', placeholder: 'Ej: Sano' },
+            { label: 'Dueño', key: 'dueno', placeholder: 'Ej: Juan Ruiz' },
+            { label: 'Foto del Animal', key: 'fotoIpfsHash', placeholder: '' }
           ].map((item, idx) => (
             <View key={item.key} className={idx !== 0 ? 'mt-4' : ''}>
                 <View className="flex-row items-center mb-1">
@@ -182,14 +197,14 @@ export default function RegistrarAnimalScreen() {
                       />
                     ) : null}
                   </TouchableOpacity>
-                ) : item.key === 'idcamada' ? (
+                ) : item.key === 'idCamada' ? (
                     <View
                       className={`border rounded-xl ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-300 bg-gray-50'}`}
                       style={{ paddingHorizontal: 10 }}
                     >
                       <Picker
-                        selectedValue={formData.idcamada}
-                        onValueChange={(value) => handleChange('idcamada', value)}
+                        selectedValue={formData.idCamada}
+                        onValueChange={(value) => handleChange('idCamada', value)}
                         dropdownIconColor={isDark ? 'white' : 'black'}
                       >
                         <Picker.Item label="Seleccionar camada" value="" />
@@ -198,7 +213,39 @@ export default function RegistrarAnimalScreen() {
                         ))}
                       </Picker>
                     </View>
-                  ): (
+                  ): item.key === 'sexo' ? (
+                       <View
+                         className={`border rounded-xl ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-300 bg-gray-50'}`}
+                         style={{ paddingHorizontal: 10 }}
+                       >
+                         <Picker
+                           selectedValue={formData.sexo}
+                           onValueChange={(value) => handleChange('sexo', value)}
+                           dropdownIconColor={isDark ? 'white' : 'black'}
+                         >
+                           <Picker.Item label="Seleccionar sexo" value="" />
+                           {opcionesSexo.map((op) => (
+                             <Picker.Item key={op.value} label={op.label} value={op.value} />
+                           ))}
+                         </Picker>
+                       </View>
+                     ): item.key === 'raza' ? (
+                         <View
+                           className={`border rounded-xl ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-300 bg-gray-50'}`}
+                           style={{ paddingHorizontal: 10 }}
+                         >
+                           <Picker
+                             selectedValue={formData.sexo}
+                             onValueChange={(value) => handleChange('raza', value)}
+                             dropdownIconColor={isDark ? 'white' : 'black'}
+                           >
+                             <Picker.Item label="Seleccionar raza" value="" />
+                             {opcionesRaza.map((op) => (
+                               <Picker.Item key={op.value} label={op.label} value={op.value} />
+                             ))}
+                           </Picker>
+                         </View>
+                       ): (
                   <TextInput
                     className={`border p-4 rounded-xl text-base ${isDark
                       ? 'bg-gray-900 text-white border-gray-700'
